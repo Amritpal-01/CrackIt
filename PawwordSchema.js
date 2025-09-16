@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const PasswordSchema = new mongoose.Schema({
-    password: Number
+    password: String
 })
 
 export default mongoose.model("Password", PasswordSchema);
