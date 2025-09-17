@@ -10,7 +10,7 @@ dotenv.config({ path: "./.env" });
 const app = express();
 const port = 3000;
 
-app.use(express.json())
+app.use(express.json());
 
 let isInitiated;
 const username = 2412800;
@@ -28,19 +28,24 @@ async function connectDB() {
 }
 
 app.get("/wake", async (req, res) => {
-  console.log("fuction called");
+  console.log("Function called");
 
-  setTimeout(() => {
-    fetch('https://amrit-hanjra.vercel.app/api/wake', {
-      method : "GET",
-      // headers : {
-      //   'Content-Type' : 'application/json'
-      // }
-    })
-  }, 100)
+  try {
+    const response = await fetch("https://amrit-hanjra.vercel.app/api/wake", {
+      method: "GET",
+    });
 
-  res.send("waked");
-})
+    console.log("Status:", response.status);
+    const body = await response.text();
+    console.log("Body:", body);
+
+    res.send("Waked");
+  } catch (err) {
+    console.error("Error during fetch:", err);
+    res.status(500).send("Error");
+  }
+});
+
 
 app.get("/", async (req, res) => {
   let str;
@@ -134,7 +139,7 @@ const main = async (str) => {
           return;
         }
 
-        if(i != 9) str = nextComb(str);
+        if (i != 9) str = nextComb(str);
       }
 
       try {
@@ -144,7 +149,7 @@ const main = async (str) => {
         oldTrack.passTrack = str;
         oldTrack.digiTrack = totalDigit;
 
-        console.log(oldTrack)
+        console.log(oldTrack);
 
         await oldTrack.save();
       } catch {
