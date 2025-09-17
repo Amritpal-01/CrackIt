@@ -39,7 +39,7 @@ app.get("/wake", async (req, res) => {
       console.log("Status:", response.status);
       const body = await response.text();
       console.log("Body:", body);
-    }, 10000);
+    }, 60000 * 10);
 
     res.send("Waked");
   } catch (err) {
@@ -50,7 +50,7 @@ app.get("/wake", async (req, res) => {
 
 app.get("/", async (req, res) => {
   let str;
-  if (isInitiated) return res.send(`Initiated`);
+  if (isInitiated) return res.send(`Initiated, ${str}`);
   isInitiated = true;
 
   await connectDB();
@@ -80,7 +80,7 @@ app.get("/", async (req, res) => {
 
   console.log(`initiated with pass : ${str}, digi : ${totalDigit}`);
 
-  // main(str);
+  main(str);
   res.send("Initiated");
 });
 
