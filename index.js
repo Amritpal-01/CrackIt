@@ -38,6 +38,8 @@ app.get("/wake", async (req, res) => {
       // }
     })
   }, 100)
+
+  res.send("waked");
 })
 
 app.get("/", async (req, res) => {
