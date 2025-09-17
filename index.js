@@ -8,7 +8,7 @@ import DBTrack from "./DBTrackSchema.js";
 dotenv.config({ path: "./.env" });
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(express.json());
 
@@ -31,13 +31,15 @@ app.get("/wake", async (req, res) => {
   console.log("Function called");
 
   try {
-    const response = await fetch("https://amrit-hanjra.vercel.app/api/wake", {
-      method: "GET",
-    });
+    setTimeout(async () => {
+      const response = await fetch("https://amrit-hanjra.vercel.app/api/wake", {
+        method: "GET",
+      });
 
-    console.log("Status:", response.status);
-    const body = await response.text();
-    console.log("Body:", body);
+      console.log("Status:", response.status);
+      const body = await response.text();
+      console.log("Body:", body);
+    }, 10000);
 
     res.send("Waked");
   } catch (err) {
@@ -45,7 +47,6 @@ app.get("/wake", async (req, res) => {
     res.status(500).send("Error");
   }
 });
-
 
 app.get("/", async (req, res) => {
   let str;
