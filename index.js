@@ -72,7 +72,7 @@ app.get("/", async (req, res) => {
 
   console.log(`initiated with pass : ${str}, digi : ${totalDigit}`);
 
-  main(str);
+  // main(str);
   res.send("Initiated");
 });
 
